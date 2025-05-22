@@ -1,0 +1,7 @@
+[project]
+name = "requiem-testing"
+version = "0.0.0"
+authors = [
+    {name = "Polllaris"}
+]
+description = "Tools for testing & distribution on the requiem world project."
