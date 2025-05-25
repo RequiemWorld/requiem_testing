@@ -1,4 +1,4 @@
-![Continuous Integration](https://github.com/RequiemWorld/requiem_testing/actions/workflows/continuous-integration.yml/badge.svg)
+![Continuous Integration](https://github.com/RequiemWorld/requiem_testing/actions/workflows/continuous-integration.yml/badge.svg?no-cache)
 # Requiem Testing
 A package to aid in automated end to end acceptance testing/release/distribution of software on the project. 
 ## Glossary
