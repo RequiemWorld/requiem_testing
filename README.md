@@ -1,6 +1,6 @@
+![Continuous Integration](https://github.com/RequiemWorld/requiem_testing/actions/workflows/continuous-integration.yml/badge.svg)
 # Requiem Testing
 A package to aid in automated end to end acceptance testing/release/distribution of software on the project. 
-
 ## Glossary
 - **Networking**
   - **RelevantProcNetTCPEntry** -> A helper class for representing the values that we care about from entries in the /proc/net/tcp file in Linux. 
