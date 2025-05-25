@@ -25,7 +25,7 @@ def parse_header_lines(header_lines_data: bytes) -> dict[str, str]:
     headers = {}
     header_lines = [line_data for line_data in header_lines_data.split(b"\r\n") if line_data != b""]
     for header_line_data in header_lines:
-        header_name, header_value = header_line_data.decode().split(":")
+        header_name, header_value = header_line_data.decode().split(":", 1)
         headers[header_name.title()] = header_value.lstrip(" ")
     return headers
 

@@ -18,6 +18,9 @@ class TestHTTPHeaderLinesParsingFunction(unittest.TestCase):
     def test_should_be_able_to_read_headers_when_last_header_in_data_ends_with_a_carriage_return_and_line_feed(self):
         self.assertEqual({"Header": "Value"}, parse_header_lines(b"Header: Value\r\n"))
 
+    def test_should_read_headers_correctly_when_there_is_a_colon_in_the_field_value(self):
+        self.assertEqual({"Host": "127.0.0.1:80"}, parse_header_lines(b"Host: 127.0.0.1:80"))
+
 
 class TestHTTPRequestStartLineParsingFunction(unittest.TestCase):
 
