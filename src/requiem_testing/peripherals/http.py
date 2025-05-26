@@ -1,3 +1,7 @@
+import enum
+import json
+from json import JSONDecodeError
+from typing import Awaitable, Callable
 
 
 def parse_start_line(line_data: bytes) -> tuple[str, str, str]:
@@ -53,3 +57,99 @@ def write_header_lines(headers: list[tuple[str, str]]) -> bytes:
         header_lines_data += header_name.encode() + b": " + header_value.encode() + b"\r\n"
     header_lines_data += b"\r\n"
     return header_lines_data
+
+
+# [DESIGN WORK IN PROGRESS]
+class HTTPMethod(enum.Enum):
+    ANY = "ANY"  # this is trashy, however, this enum is also used for the router for now, and this is simple
+    GET = "GET"
+    POST = "POST"
+
+
+# [DESIGN WORK IN PROGRESS]
+class HTTPRequest:
+    def __init__(self, method: HTTPMethod, path: str, headers: dict[str, str], content: bytes):
+        self.path = path
+        self.headers = headers
+        self.method = method
+        self.content = content
+
+    def copy(self) -> "HTTPRequest":
+        return HTTPRequest(self.method, self.path, self.headers.copy(), self.content)
+
+    def json(self) -> list | dict:
+        """
+        Assumes the request body has no encoding and is serialized JSON, then deserializes it.
+        :raises ValueError: when the content in the body is not json or deserialization has failed.
+        """
+        try:
+            return json.loads(self.content.decode())
+        except JSONDecodeError as e:
+            raise ValueError from e
+
+
+# [DESIGN WORK IN PROGRESS]
+class HTTPResponse:
+    def __init__(self, status_code: int, reason_phrase: str, headers: dict[str, str], content: bytes):
+        self.status_code = status_code
+        self.reason_phrase = reason_phrase
+        self.headers = headers
+        self.content = content
+
+    def copy(self) -> "HTTPResponse":
+        return HTTPResponse(self.status_code, self.reason_phrase, self.headers.copy(), self.content)
+
+    def fill_content_length(self) -> None:
+        """
+        Measures the length of the content data and changes the Content-Length header value to match.
+
+        :raises ValueError: When there is no content present to write the length of.
+        """
+        if self.content == b"":
+            raise ValueError("content is empty and no length content length should be written")
+
+        self.headers["Content-Length"] = str(len(self.content))
+
+
+# [DESIGN WORK IN PROGRESS]
+RequestHandler = Callable[[HTTPRequest], Awaitable[HTTPResponse]]
+class AsyncHTTPRouter:
+    """
+    A simple facility for mapping methods and paths to request handlers.
+    """
+    def __init__(self):
+        self._paths_to_handlers_map: dict[tuple[str, HTTPMethod], RequestHandler] = dict()
+
+    def _add_handler(self, path: str, method: HTTPMethod, handler: RequestHandler) -> None:
+
+        """
+        :raises ValueError: When a handler has already been added for the path matching any method.
+        """
+        if (path, HTTPMethod.ANY) in self._paths_to_handlers_map:
+            raise ValueError("this path already has a handled added that matches ANY path and method")
+        self._paths_to_handlers_map[path, method] = handler
+
+    def add_handler_for_any(self, path: str, handler: RequestHandler):
+        """
+        Given a path and request handler, will map it so that any request for
+        that path under any method will get handled by it.
+        """
+        self._add_handler(path, HTTPMethod.ANY, handler)
+
+    def add_handler_for_get(self, path: str, handler: RequestHandler) -> None:
+        """
+        Add a request handler for the given path, for get requests specifically.
+
+        :raises ValueError: When a handler has already been added for the path matching any method.
+        """
+        self._add_handler(path, HTTPMethod.GET, handler)
+
+    def add_handler_for_post(self, path: str, handler: RequestHandler) -> None:
+        self._add_handler(path, HTTPMethod.POST, handler)
+
+    def get_handler_for_path(self, path: str, method: HTTPMethod) -> RequestHandler | None:
+        handler_for_any_method = self._paths_to_handlers_map.get((path, HTTPMethod.ANY))
+        if handler_for_any_method is not None:
+            return handler_for_any_method
+        return self._paths_to_handlers_map.get((path, method))
+
