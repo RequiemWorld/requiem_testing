@@ -4,4 +4,7 @@ version = "0.1.0"
 authors = [
     {name = "Polllaris"}
 ]
+dependencies = [
+    "pytest==8.3.5"
+]
 description = "Tools for testing & distribution on the requiem world project."
