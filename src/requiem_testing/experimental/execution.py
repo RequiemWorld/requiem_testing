@@ -12,6 +12,12 @@ class SimpleProgramExecutionResult:
         self._all_output_data = all_output_data
         self._exit_code = exit_code
 
+    def _has_line(self, line_without_separator: str) -> bool:
+        for line_data in self.read_lines():
+            if line_data.decode() == line_without_separator:
+                return True
+        return False
+
     @property
     def exit_code(self):
         return self._exit_code
@@ -26,10 +32,7 @@ class SimpleProgramExecutionResult:
         return len(self.read_lines())
 
     def assert_has_line(self, line_without_separator: str) -> None:
-        found_matching_line = False
-        for line_data in self.read_lines():
-            if line_data.decode() == line_without_separator:
-                return
+        found_matching_line = self._has_line(line_without_separator)
         assert found_matching_line, f"no line matching {line_without_separator} was found"
 
     def assert_exact_line_output(self, lines_without_separators: list[str]):
@@ -42,6 +45,9 @@ class SimpleProgramExecutionResult:
 
     def assert_has_only_one_line(self) -> None:
         self.assert_has_exact_number_of_lines(1)
+
+    def assert_does_not_have_line(self, line_without_separator: str):
+        assert not self._has_line(line_without_separator), f"line was found in {self._all_output_data}"
 
 
 class SimpleProgramExecutor:
