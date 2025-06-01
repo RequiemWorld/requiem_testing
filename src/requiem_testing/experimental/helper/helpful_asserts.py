@@ -8,7 +8,7 @@ def assert_string_ends_with(string: str, ending: str, msg: str | None = None) ->
     :raises AssertionError: if the given string doesn't end with the given ending.
     """
     if msg is None:
-        assertion_message = f"ending {ending} not found in {msg}"
+        assertion_message = f"ending {ending} not found in {string}"
     else:
         assertion_message = msg
 
