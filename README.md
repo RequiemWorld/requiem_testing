@@ -19,9 +19,6 @@ A package to aid in automated end to end acceptance testing/release/distribution
     - **Note 2**: This should be able to start and run the application without having to know exactly where it is and how to execute it e.g. it should be able to run a hello_world.py or a hello_world.exe.
     - **Note 3**: The current idea is to have the subclass that will form the base class to inherit for testing the specific application to setup an argument parser, and to setup information about the program to execute such as the base part of the start command. For example: Regardless of print_text.py or print_text.exe, the test should be able to run something like self.execute("--text-to-print value")
     - **Note 4**: In different styles of acceptance tests, it will be desirable to have the test case start the application at least once from somewhere, and this may pave the way for a similar approach.
-  - **NetworkedAcceptanceTestCase** - A base class for making base classes for the acceptance testing of server applications
-    - This is designed to test something that is explicitly a server application that has logic involving networking and be a fit for acceptance testing but isn't an enterprise application e.g. an HTTP Server, a HTTP reverse proxy, a socks proxy, etc.
-      - That is to emphasize that in this type of application the startup/configuration and interaction with the system is more than an implementation detail and the indirection of a driver layer and much abstraction is unnecessary.
 
 ## Versioning Notice
 
