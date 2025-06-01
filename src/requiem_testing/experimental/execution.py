@@ -51,8 +51,8 @@ class SimpleProgramExecutionResult:
         assert not self._has_line(line_without_separator), f"line was found in {self._all_output_data}"
 
     def assert_one_and_only_line_ends_with(self, ending_string: str):
-        assert self.count_lines() >= 2, f"the program output contains more than one line {self._all_output_data}"
-        assert self.count_lines() < 1, f"the program output doesn't have any lines {self._all_output_data}"
+        assert self.count_lines() < 2, f"the program output contains more than one line {self._all_output_data}"
+        assert self.count_lines() > 1, f"the program output doesn't have any lines {self._all_output_data}"
         assert_string_ends_with(self.read_lines()[0].decode(), ending_string)
 
 
